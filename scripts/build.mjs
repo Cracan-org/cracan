@@ -19,7 +19,8 @@ await writeFile(htmlPath, html);
 // Real robots.txt and sitemap (otherwise the SPA rewrite serves index.html for them).
 const site = `https://${brand.domain}`;
 await writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nDisallow: /dashboard\n\nSitemap: ${site}/sitemap.xml\n`);
-await writeFile('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${site}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>\n</urlset>\n`);
+const pages = [['/', '1.0'], ['/help', '0.9'], ['/volunteer', '0.8'], ['/guidelines', '0.5'], ['/privacy', '0.3']];
+await writeFile('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(([p, pr]) => `  <url><loc>${site}${p}</loc><changefreq>monthly</changefreq><priority>${pr}</priority></url>`).join('\n')}\n</urlset>\n`);
 
 await writeFile('firebase.json', JSON.stringify({
   hosting: {

@@ -122,3 +122,53 @@ test('boundary-length values and empty preference lists remain usable', async ()
   await assertSucceeds(setDoc(ref, valid({ displayName: 'x'.repeat(100), focus: 'x'.repeat(240), bookmarks: [] })));
   await assertSucceeds(updateDoc(ref, { displayName: '', focus: '', bookmarks: ['mission', 'updates', 'resources', 'community'], updatedAt: serverTimestamp() }));
 });
+
+const volunteer = (patch = {}) => ({
+  name: 'Jonathan', email: 'owner@example.com', location: 'Oakland, USA',
+  skills: ['organizing', 'court-watch'], availability: 'weekly', languages: 'English',
+  note: 'Happy to help', updatedAt: serverTimestamp(), ...patch,
+});
+const signup = (db, uid = 'owner') => doc(db, 'volunteers', uid);
+
+test('volunteers can create, read, update and withdraw their own sign-up', async () => {
+  const ref = signup(dbFor('owner'));
+  await assertSucceeds(setDoc(ref, volunteer()));
+  await assertSucceeds(getDoc(ref));
+  await assertSucceeds(setDoc(ref, volunteer({ skills: ['translation'], availability: 'events', languages: '', note: '' })));
+  await assertSucceeds(deleteDoc(ref));
+});
+
+test('volunteer sign-ups are private to the owner and admins', async () => {
+  await setDoc(signup(dbFor('owner')), volunteer());
+  const anon = environment.unauthenticatedContext().firestore();
+  await assertFails(getDoc(signup(anon)));
+  await assertFails(setDoc(signup(anon, 'x'), volunteer()));
+  const other = dbFor('other');
+  await assertFails(getDoc(signup(other)));
+  await assertFails(getDocs(collection(other, 'volunteers')));
+  await assertFails(setDoc(signup(other), volunteer({ email: 'other@example.com' })));
+  await assertFails(deleteDoc(signup(other)));
+  await assertFails(getDocs(collection(dbFor('owner'), 'volunteers')));
+  const admin = dbFor('boss', { admin: true });
+  await assertSucceeds(getDoc(signup(admin)));
+  await assertSucceeds(getDocs(collection(admin, 'volunteers')));
+  await assertFails(setDoc(signup(admin), volunteer({ note: 'Overwritten by admin' })));
+  await assertSucceeds(deleteDoc(signup(admin)));
+});
+
+test('volunteer sign-ups reject bad data, spoofed email and unverified accounts', async () => {
+  const ref = signup(dbFor('owner'));
+  for (const key of Object.keys(volunteer())) {
+    const data = volunteer(); delete data[key];
+    await assertFails(setDoc(ref, data));
+  }
+  for (const patch of [
+    { email: 'someone-else@example.com' }, { role: 'admin' }, { caseDetails: 'x' },
+    { name: '' }, { name: 'x'.repeat(101) }, { location: '' }, { location: 'x'.repeat(121) },
+    { skills: [] }, { skills: ['hacking'] }, { skills: 'organizing' }, { skills: Array(13).fill('legal') },
+    { availability: 'daily' }, { languages: 'x'.repeat(121) }, { note: 'x'.repeat(501) },
+    { updatedAt: Timestamp.fromMillis(0) },
+  ]) await assertFails(setDoc(ref, volunteer(patch)));
+  await assertSucceeds(setDoc(ref, volunteer({ name: 'x'.repeat(100), location: 'x'.repeat(120), languages: 'x'.repeat(120), note: 'x'.repeat(500) })));
+  await assertFails(setDoc(signup(dbFor('unverified', { email_verified: false }), 'unverified'), volunteer({ email: 'unverified@example.com' })));
+});

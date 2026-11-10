@@ -3,6 +3,9 @@
 // bookmarks (list <=20 containing only mission, updates, resources, community),
 // updatedAt (timestamp set with serverTimestamp()). No case or intake data.
 // Ownership is the immutable document path. Admin is a server-set custom claim.
+// volunteers/{uid}: one sign-up per account, readable only by its owner and
+// admins. email must equal the signed-in account's verified email. Skill ids
+// must match src/content.js. No case or intake data.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -40,6 +43,29 @@ service cloud.firestore {
       allow list: if isAdmin();
       allow create: if canWrite(uid) && isValidProfile(request.resource.data);
       allow update: if canWrite(uid) && isValidProfile(request.resource.data);
+      allow delete: if canWrite(uid) || isAdmin();
+    }
+
+    function isValidVolunteer(data) {
+      let fields = ['name', 'email', 'location', 'skills', 'availability', 'languages', 'note', 'updatedAt'];
+      return data.keys().hasAll(fields)
+        && data.keys().hasOnly(fields)
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.email is string && data.email == request.auth.token.email
+        && data.location is string && data.location.size() > 0 && data.location.size() <= 120
+        && data.skills is list && data.skills.size() > 0 && data.skills.size() <= 12
+        && data.skills.hasOnly(['organizing', 'court-watch', 'legal', 'records', 'translation', 'support',
+                                'outreach', 'research', 'writing', 'tech', 'design', 'fundraising'])
+        && data.availability in ['events', 'monthly', 'weekly']
+        && data.languages is string && data.languages.size() <= 120
+        && data.note is string && data.note.size() <= 500
+        && data.updatedAt is timestamp && data.updatedAt == request.time;
+    }
+
+    match /volunteers/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update: if canWrite(uid) && isValidVolunteer(request.resource.data);
       allow delete: if canWrite(uid) || isAdmin();
     }
 

@@ -1,0 +1,42 @@
+import {chromium, expect} from '@playwright/test';
+// Volunteer sign-up flow against the emulators. Demo data only.
+const base = process.env.APP_URL || 'http://127.0.0.1:4174';
+const authPort = process.env.VITE_AUTH_PORT || 9099;
+await fetch(`http://127.0.0.1:${authPort}/emulator/v1/projects/demo-four-sites/accounts`, {method: 'DELETE'});
+const browser = await chromium.launch();
+const page = await browser.newPage({viewport: {width: 1280, height: 1000}});
+const errors = []; page.on('pageerror', e => errors.push(e.message));
+try {
+  await page.goto(base + '/volunteer');
+  const next = page.waitForEvent('popup');
+  await page.getByRole('button', {name: 'Continue with Google'}).click();
+  const popup = await next; await popup.getByText('Add new account').click();
+  await popup.locator('#email-input').fill('volunteer-test@example.com');
+  await popup.locator('#display-name-input').fill('Vol Tester');
+  await popup.getByRole('button', {name: 'Sign in with Google.com', exact: true}).click();
+  await page.waitForURL(base + '/volunteer');
+  await expect(page.getByLabel('Your name')).toHaveValue('Vol Tester');
+  await page.getByLabel('City and country').fill('Oakland, USA');
+  await page.getByRole('button', {name: 'Sign me up'}).click();
+  await page.getByRole('alert').filter({hasText: 'at least one'}).waitFor();
+  await page.getByLabel('Court watching').check();
+  await page.getByLabel('Translation').check();
+  await page.getByLabel('A few hours a week').check();
+  await page.getByLabel(/Languages/).fill('English, Spanish');
+  await page.getByRole('button', {name: 'Sign me up'}).click();
+  await page.getByRole('status').filter({hasText: 'Thank you for signing up'}).waitFor();
+  await page.reload();
+  await expect(page.getByLabel('City and country')).toHaveValue('Oakland, USA');
+  await expect(page.getByLabel('Court watching')).toBeChecked();
+  await expect(page.getByLabel('A few hours a week')).toBeChecked();
+  await page.getByLabel('Translation').uncheck();
+  await page.getByRole('button', {name: 'Update my sign-up'}).click();
+  await page.getByRole('status').filter({hasText: 'updated'}).waitFor();
+  page.once('dialog', d => d.accept());
+  await page.getByRole('button', {name: 'Withdraw my sign-up'}).click();
+  await page.getByRole('status').filter({hasText: 'withdrawn'}).waitFor();
+  await page.reload();
+  await expect(page.getByRole('button', {name: 'Sign me up'})).toBeVisible();
+  if (errors.length) throw Error(errors.join('\n'));
+  console.log('PASS: sign in, validation, sign up, reload persistence, update, withdraw.');
+} finally {await browser.close();}

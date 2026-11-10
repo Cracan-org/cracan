@@ -5,7 +5,7 @@ await mkdir('screenshots',{recursive:true});
 const page=await browser.newPage({viewport:{width:1440,height:1050}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.goto(process.env.CHECK_URL||'http://127.0.0.1:4173');
-await page.getByRole('heading',{name:'Know your rights. Shape your community.'}).waitFor();
+await page.getByRole('heading',{name:'You’re not alone. Let’s do something about it.'}).waitFor();
 await page.screenshot({path:'screenshots/cracan-desktop.png',fullPage:true});
 await page.goto((process.env.CHECK_URL||'http://127.0.0.1:4173')+'/dashboard');
 await page.getByRole('heading',{name:'Welcome back.'}).waitFor();
@@ -19,7 +19,7 @@ if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))thro
 await page.getByRole('link',{name:'Privacy',exact:true}).click();
 await page.getByRole('heading',{name:'Privacy, in plain language.'}).waitFor();
 await page.goBack();
-await page.getByRole('heading',{name:'Know your rights. Shape your community.'}).waitFor();
+await page.getByRole('heading',{name:'You’re not alone. Let’s do something about it.'}).waitFor();
 if(errors.length)throw Error(errors.join('\n'));
 console.log('Passed desktop/mobile rendering, navigation, private route gate, privacy page, back button; no JS errors.');
 await browser.close();

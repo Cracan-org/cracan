@@ -7,62 +7,66 @@ export const brands = {
     "mark": "network",
     "eyebrow": "Civil Rights & Civic Action Network",
     "title": [
-      "Know your rights.",
-      "Shape your community."
+      "You’re not alone.",
+      "Let’s do something about it."
     ],
-    "description": "An Oakland pilot taking shape to connect civil rights awareness with meaningful civic action.",
-    "label": "Starting in Oakland, California",
+    "description": "A global network for people whose civil rights were violated and for everyone who wants to help. Find practical next steps, connect with others, and take action in your community.",
+    "label": "Global network · First chapter: Oakland, California",
     "heading": "Rights are personal. Progress is collective.",
-    "about": "We’re building a network to help people navigate civil rights resources and take part in the decisions that affect their neighborhoods. The Oakland pilot is in development.",
+    "about": "When your rights are violated, it’s hard to know where to turn, what the deadlines are, or who will stand with you. CRACAN brings together the people it happened to and the neighbors, volunteers and professionals who want to help, so no one has to figure it out alone.",
     "pillars": [
       [
         "Understand",
-        "Make civil rights information easier to find and understand."
+        "Plain-language guides to your rights, the deadlines that matter, and where to file."
       ],
       [
         "Connect",
-        "Help people discover established organizations and appropriate support."
+        "Meet people who’ve been through it, plus volunteers, legal organizations and local chapters."
       ],
       [
-        "Participate",
-        "Encourage informed, constructive participation in community life."
+        "Act",
+        "Show up together at council meetings and in court, request records, and push for change."
       ]
     ],
     "resources": [
       [
         "mission",
-        "The Oakland pilot",
-        "Learn about the network we are building.",
-        "/#about"
+        "Get help now",
+        "First steps, deadlines, and where to report a violation.",
+        "/help"
+      ],
+      [
+        "community",
+        "Volunteer with CRACAN",
+        "Offer your skills or your time, from court watching to translation.",
+        "/volunteer"
       ],
       [
         "resources",
         "ACLU of Northern California",
-        "Find civil rights information from an established organization.",
+        "Civil rights information from an established organization.",
         "https://www.aclunc.org"
       ],
       [
-        "community",
-        "Oakland city government",
-        "Explore public meetings and ways to participate.",
-        "https://www.oaklandca.gov"
-      ],
-      [
         "updates",
-        "Connect with CRACAN",
-        "Ask about the pilot or share a general collaboration idea.",
+        "Contact CRACAN",
+        "Start a chapter, partner with us, or ask a general question.",
         "mailto:contact@cracan.org"
       ]
     ],
     "roadmap": [
-      "Introduce the Oakland pilot",
-      "Develop a resource directory",
-      "Build community partnerships"
+      ["Launch the network, Get Help guide and volunteer sign-up", "Available now"],
+      ["Open the community space and the Oakland chapter", "Next"],
+      ["Spanish, then more languages", "Planned"],
+      ["Guides for more states and countries, plus a local actions board", "Planned"]
     ],
     "footer": "Civil rights. Civic voice. Shared responsibility.",
-    "cardTitle": "Your voice belongs here",
-    "cardSub": "Oakland is our starting point",
+    "cardTitle": "Stronger together",
+    "cardSub": "Oakland is our first chapter",
     "contact": "contact@cracan.org",
-    "notice": "CRACAN is an initiative in development, not a law firm or emergency service. We are not accepting case files through this site. Please do not send confidential legal documents or sensitive personal details."
+    // Invite link for the community space (Discord, WhatsApp, Discourse…).
+    // Leave empty until it exists; the site then shows "opening soon".
+    "community": "",
+    "notice": "CRACAN is a community network, not a law firm or emergency service, and nothing on this site is legal advice. We do not accept case files through this site. Please do not send confidential legal documents or sensitive personal details. In an emergency, call 911 or your local emergency number."
   }
 };

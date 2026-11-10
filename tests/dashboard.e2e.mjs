@@ -15,12 +15,12 @@ try{
  await page.getByLabel('What would you like to explore?').fill('Explore community resources');
  await page.getByRole('button',{name:'Save profile',exact:true}).click();
  await page.getByRole('status').filter({hasText:'Saved to your account.'}).waitFor();
- await page.getByRole('button',{name:'Save The Oakland pilot',exact:true}).click();
- await expect(page.getByRole('button',{name:'Unsave The Oakland pilot',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'Save Get help now',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Unsave Get help now',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.reload();
  await expect(page.getByLabel('Display name',{exact:true})).toHaveValue('Saved Test Name');
  await expect(page.getByLabel('What would you like to explore?')).toHaveValue('Explore community resources');
- await expect(page.getByRole('button',{name:'Unsave The Oakland pilot',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('button',{name:'Unsave Get help now',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.screenshot({path:'screenshots/dashboard-tested.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});
  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Dashboard overflows mobile viewport');
